@@ -1,0 +1,486 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Advanced Flask App{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+    <div class="container">
+        <h1 class="section-title">Get in <span class="highlight">Touch</span></h1>
+        <p class="section-subtitle">Have a project in mind? We'd love to hear from you.</p>
+    </div>
+</section>
+
+<section class="contact-content">
+    <div class="container">
+        <div class="contact-container">
+            <div class="contact-info">
+                <h2>Contact <span class="highlight">Information</span></h2>
+                <p>Fill out the form or use the contact details below to reach us.</p>
+
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Our Location</h4>
+                            <p>123 Tech Street, Silicon Valley, CA 94000</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Email Address</h4>
+                            <p>contact@flaskadvanced.com</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Phone Number</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="info-content">
+                            <h4>Working Hours</h4>
+                            <p>Monday - Friday: 9:00 AM - 6:00 PM PST</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="social-section">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-form-container">
+                <h2>Send Us a <span class="highlight">Message</span></h2>
+
+                {% if error %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+                {% endif %}
+
+                {% if success %}
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> {{ success }}
+                </div>
+                {% endif %}
+
+                <form method="POST" action="/contact" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" class="form-input" placeholder="John Doe" required
+                            value="{{ request.form.name if request.form }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="john@example.com"
+                            required value="{{ request.form.email if request.form }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="form-input" placeholder="Project Inquiry"
+                            value="{{ request.form.subject if request.form }}">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Your Message *</label>
+                        <textarea id="message" name="message" class="form-textarea"
+                            placeholder="Tell us about your project..."
+                            required>{{ request.form.message if request.form }}</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-large">
+                            <i class="fas fa-paper-plane"></i> Send Message
+                        </button>
+                    </div>
+                </form>
+
+                <div class="api-note">
+                    <p><i class="fas fa-code"></i> <strong>Developer Note:</strong> This form can also be submitted via
+                        API at <code>/api/contact</code></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="map-section">
+            <h2 class="section-title">Find Us On The <span class="highlight">Map</span></h2>
+            <div class="map-placeholder">
+                <div class="map-content">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <h3>Interactive Map</h3>
+                    <p>In a production application, this would display an interactive Google Map or OpenStreetMap.</p>
+                    <div class="map-coordinates">
+                        <p><strong>Coordinates:</strong> 37.7749° N, 122.4194° W</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <h2 class="section-title">Frequently Asked <span class="highlight">Questions</span></h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        How quickly can you start a new project?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We can typically begin new projects within 1-2 weeks of initial contact, depending on project
+                            complexity and our current capacity.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        What is your typical project timeline?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Project timelines vary based on scope. Small projects (1-2 pages) can take 2-4 weeks, while
+                            complex applications may require 3-6 months or more.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Do you offer ongoing maintenance?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, we offer various maintenance plans including security updates, performance monitoring,
+                            and feature enhancements.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        Can you work with our existing codebase?
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! We frequently work with existing Flask applications to add features, improve
+                            performance, or modernize the codebase.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        padding: 100px 20px;
+        background: linear-gradient(135deg, #7209b7 0%, #3a0ca3 100%);
+        color: white;
+        text-align: center;
+    }
+
+    .contact-hero .section-title,
+    .contact-hero .section-subtitle {
+        color: white;
+    }
+
+    .contact-content {
+        padding: 80px 20px;
+    }
+
+    .contact-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 60px;
+        margin-bottom: 80px;
+    }
+
+    .contact-info h2 {
+        margin-bottom: 20px;
+        font-size: 2rem;
+    }
+
+    .contact-info>p {
+        margin-bottom: 40px;
+        font-size: 1.1rem;
+    }
+
+    .info-cards {
+        margin-bottom: 40px;
+    }
+
+    .info-card {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        padding: 20px;
+        background-color: var(--light-gray);
+        border-radius: var(--border-radius);
+        transition: var(--transition);
+    }
+
+    .info-card:hover {
+        transform: translateX(10px);
+        box-shadow: var(--box-shadow);
+    }
+
+    .info-icon {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-right: 20px;
+        margin-top: 5px;
+    }
+
+    .info-content h4 {
+        margin-bottom: 5px;
+    }
+
+    .social-section {
+        margin-top: 40px;
+    }
+
+    .social-section h4 {
+        margin-bottom: 15px;
+    }
+
+    .map-section {
+        margin: 80px 0;
+    }
+
+    .map-placeholder {
+        background: linear-gradient(135deg, #f5f7ff 0%, #eef1ff 100%);
+        border-radius: var(--border-radius);
+        padding: 80px 40px;
+        text-align: center;
+        margin-top: 40px;
+        box-shadow: var(--box-shadow);
+    }
+
+    .map-content i {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    .map-content h3 {
+        margin-bottom: 15px;
+    }
+
+    .map-content p {
+        margin-bottom: 20px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .map-coordinates {
+        background-color: white;
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: var(--border-radius);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .faq-section {
+        margin-top: 80px;
+    }
+
+    .faq-container {
+        max-width: 800px;
+        margin: 50px auto 0;
+    }
+
+    .faq-item {
+        margin-bottom: 15px;
+        border: 1px solid var(--light-gray);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .faq-question {
+        width: 100%;
+        padding: 20px;
+        background-color: white;
+        border: none;
+        text-align: left;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+
+    .faq-question:hover {
+        background-color: var(--light-gray);
+    }
+
+    .faq-question i {
+        transition: transform 0.3s ease;
+    }
+
+    .faq-question.active i {
+        transform: rotate(180deg);
+    }
+
+    .faq-answer {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .faq-answer.active {
+        padding: 20px;
+        max-height: 300px;
+    }
+
+    .api-note {
+        margin-top: 30px;
+        padding: 15px;
+        background-color: rgba(67, 97, 238, 0.1);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .api-note i {
+        color: var(--primary-color);
+        margin-right: 10px;
+    }
+
+    .api-note code {
+        background-color: rgba(0, 0, 0, 0.1);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // FAQ functionality
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', function () {
+                const answer = this.nextElementSibling;
+                const isActive = this.classList.contains('active');
+
+                // Close all other FAQs
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    q.classList.remove('active');
+                    q.nextElementSibling.classList.remove('active');
+                });
+
+                // Open this one if it wasn't active
+                if (!isActive) {
+                    this.classList.add('active');
+                    answer.classList.add('active');
+                }
+            });
+        });
+
+        // Form character counter for message
+        const messageInput = document.getElementById('message');
+        if (messageInput) {
+            const charCounter = document.createElement('div');
+            charCounter.className = 'char-counter';
+            charCounter.style.fontSize = '0.85rem';
+            charCounter.style.color = 'var(--gray-color)';
+            charCounter.style.marginTop = '5px';
+            charCounter.style.textAlign = 'right';
+            charCounter.textContent = '0/1000 characters';
+
+            messageInput.parentNode.appendChild(charCounter);
+
+            messageInput.addEventListener('input', function () {
+                const length = this.value.length;
+                charCounter.textContent = `${length}/1000 characters`;
+
+                if (length > 900) {
+                    charCounter.style.color = 'var(--warning-color)';
+                } else if (length > 750) {
+                    charCounter.style.color = 'orange';
+                } else {
+                    charCounter.style.color = 'var(--gray-color)';
+                }
+
+                if (length > 1000) {
+                    this.value = this.value.substring(0, 1000);
+                    charCounter.textContent = '1000/1000 characters (limit reached)';
+                }
+            });
+        }
+
+        // Form auto-save to localStorage
+        const contactForm = document.querySelector('.contact-form');
+        if (contactForm) {
+            const formInputs = contactForm.querySelectorAll('input, textarea');
+            const formKey = 'contactFormDraft';
+
+            // Load saved data
+            const savedData = localStorage.getItem(formKey);
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                formInputs.forEach(input => {
+                    if (data[input.name]) {
+                        input.value = data[input.name];
+                    }
+                });
+
+                // Show restore message
+                const restoreMsg = document.createElement('div');
+                restoreMsg.className = 'alert alert-success';
+                restoreMsg.style.marginTop = '10px';
+                restoreMsg.innerHTML = '<i class="fas fa-history"></i> Draft restored from your last session.';
+                contactForm.appendChild(restoreMsg);
+
+                setTimeout(() => {
+                    restoreMsg.style.opacity = '0';
+                    setTimeout(() => restoreMsg.remove(), 300);
+                }, 5000);
+            }
+
+            // Save on input
+            function saveFormDraft() {
+                const data = {};
+                formInputs.forEach(input => {
+                    data[input.name] = input.value;
+                });
+                localStorage.setItem(formKey, JSON.stringify(data));
+            }
+
+            formInputs.forEach(input => {
+                input.addEventListener('input', saveFormDraft);
+            });
+
+            // Clear on successful submit
+            contactForm.addEventListener('submit', function () {
+                localStorage.removeItem(formKey);
+            });
+        }
+    });
+</script>
+{% endblock %}

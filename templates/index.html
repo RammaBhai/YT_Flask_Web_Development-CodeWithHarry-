@@ -1,0 +1,1365 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Advanced Flask App{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Parallax and 3D effects */
+    .parallax-section {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .particles-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+    }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .gradient-border {
+        position: relative;
+        border-radius: var(--border-radius);
+        padding: 1px;
+        background: linear-gradient(45deg, #4361ee, #3a0ca3, #7209b7, #f72585);
+        background-size: 400% 400%;
+        animation: gradientShift 8s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .gradient-border > div {
+        background: var(--light-color);
+        border-radius: calc(var(--border-radius) - 1px);
+        padding: 30px;
+    }
+    
+    .dark-theme .gradient-border > div {
+        background: var(--dark-color);
+    }
+    
+    /* Service cards 3D effect */
+    .service-card-3d {
+        transform-style: preserve-3d;
+        perspective: 1000px;
+        transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .service-card-3d:hover {
+        transform: rotateY(15deg) rotateX(5deg) scale(1.05);
+    }
+    
+    .service-card-3d .feature-icon {
+        transform: translateZ(30px);
+    }
+    
+    /* Live visitor counter */
+    .live-visitors {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: var(--primary-color);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .live-visitors i {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    /* Interactive data table */
+    .data-table-container {
+        overflow-x: auto;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+    }
+    
+    .visitor-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .visitor-table th {
+        background: var(--primary-color);
+        color: white;
+        padding: 15px;
+        text-align: left;
+        position: sticky;
+        top: 0;
+    }
+    
+    .visitor-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid var(--light-gray);
+    }
+    
+    .visitor-table tr:hover {
+        background: rgba(67, 97, 238, 0.05);
+    }
+    
+    /* Badges for status */
+    .status-badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .status-active {
+        background: rgba(76, 201, 240, 0.1);
+        color: #0c5460;
+    }
+    
+    /* Timeline */
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--primary-color);
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-left: 50px;
+        margin-bottom: 30px;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 13px;
+        top: 5px;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--primary-color);
+        border: 3px solid white;
+        box-shadow: 0 0 0 3px var(--primary-color);
+    }
+    
+    .dark-theme .timeline-item::before {
+        border-color: var(--dark-color);
+    }
+    
+    /* Heatmap */
+    .heatmap-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px 0;
+    }
+    
+    .heatmap-cell {
+        padding: 10px;
+        text-align: center;
+        border-radius: 8px;
+        transition: transform 0.2s;
+    }
+    
+    .heatmap-cell:hover {
+        transform: scale(1.1);
+        z-index: 1;
+    }
+    
+    /* Shimmer effect */
+    .shimmer {
+        background: linear-gradient(90deg, 
+            rgba(255,255,255,0) 0%, 
+            rgba(255,255,255,0.2) 50%, 
+            rgba(255,255,255,0) 100%);
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Live Visitors Counter -->
+<div class="live-visitors glass-effect" id="liveVisitors">
+    <i class="fas fa-users"></i>
+    <span id="currentVisitors">0</span> online now
+</div>
+
+<!-- Hero Section with Parallax -->
+<section class="hero parallax-section">
+    <div class="particles-container" id="particles"></div>
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="hero-title">Welcome to the <span class="highlight">Advanced</span> Flask Experience</h1>
+            <p class="hero-subtitle">Building modern, responsive web applications with Python Flask and cutting-edge
+                frontend technologies.</p>
+            <div class="hero-buttons">
+                <a href="/greet" class="btn btn-primary btn-large">
+                    <i class="fas fa-hand-wave"></i> Get Greeted
+                </a>
+                <a href="#services" class="btn btn-secondary btn-large">
+                    <i class="fas fa-rocket"></i> Explore Services
+                </a>
+                <button class="btn btn-outline btn-large" id="themeToggleBtn">
+                    <i class="fas fa-palette"></i> Theme
+                </button>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="code-animation gradient-border">
+                <div>
+                    <pre><code id="liveCode">from flask import Flask, jsonify
+from datetime import datetime
+
+app = Flask(__name__)
+visitors = []
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+@app.route("/api/visitors", methods=["GET"])
+def get_visitors():
+    return jsonify({
+        "count": len(visitors),
+        "active": [v for v in visitors if v['active']],
+        "timestamp": datetime.now().isoformat()
+    })</code></pre>
+                    <div class="code-controls">
+                        <button class="btn btn-sm" onclick="runCode()">
+                            <i class="fas fa-play"></i> Run
+                        </button>
+                        <button class="btn btn-sm btn-secondary" onclick="copyCode()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Real-time Stats Dashboard -->
+<section class="stats dashboard">
+    <div class="container">
+        <h2 class="section-title">Real-time <span class="highlight">Dashboard</span></h2>
+        <div class="stats-grid">
+            <div class="stat-card glass-effect" data-aos="zoom-in">
+                <div class="stat-number" id="projectCount">0</div>
+                <div class="stat-label">Projects Completed</div>
+                <div class="stat-trend" id="projectTrend">
+                    <i class="fas fa-arrow-up"></i> 12% this month
+                </div>
+            </div>
+            <div class="stat-card glass-effect" data-aos="zoom-in" data-aos-delay="100">
+                <div class="stat-number" id="apiCount">0</div>
+                <div class="stat-label">API Calls Today</div>
+                <div class="stat-trend" id="apiTrend">
+                    <i class="fas fa-bolt"></i> 45 calls/min
+                </div>
+            </div>
+            <div class="stat-card glass-effect" data-aos="zoom-in" data-aos-delay="200">
+                <div class="stat-number" id="clientCount">0</div>
+                <div class="stat-label">Happy Clients</div>
+                <div class="stat-trend" id="clientTrend">
+                    <i class="fas fa-star"></i> 4.9/5 rating
+                </div>
+            </div>
+            <div class="stat-card glass-effect" data-aos="zoom-in" data-aos-delay="300">
+                <div class="stat-number" id="uptimeCount">100</div>
+                <div class="stat-label">Uptime %</div>
+                <div class="stat-trend" id="uptimeTrend">
+                    <i class="fas fa-check-circle"></i> 30 days stable
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Graph -->
+        <div class="performance-graph glass-effect" style="margin-top: 40px; padding: 20px; border-radius: var(--border-radius);">
+            <h3><i class="fas fa-chart-line"></i> Performance Metrics</h3>
+            <canvas id="performanceChart" height="100"></canvas>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section with 3D Cards -->
+<section class="features" id="services">
+    <div class="container">
+        <h2 class="section-title">Our <span class="highlight">Advanced</span> Services</h2>
+        <p class="section-subtitle">We provide cutting-edge solutions for modern businesses</p>
+
+        <div class="features-grid">
+            {% for service in services %}
+            <div class="feature-card service-card-3d glass-effect" 
+                 data-aos="fade-up" 
+                 data-aos-delay="{{ loop.index0 * 100 }}"
+                 onmouseenter="showServiceDetails({{ service.id }})"
+                 onmouseleave="hideServiceDetails({{ service.id }})">
+                <div class="feature-icon">
+                    <span class="icon-large">{{ service.icon }}</span>
+                </div>
+                <h3>{{ service.title }}</h3>
+                <p>{{ service.description }}</p>
+                <ul class="feature-list">
+                    {% for feature in service.features %}
+                    <li><i class="fas fa-check-circle"></i> {{ feature }}</li>
+                    {% endfor %}
+                </ul>
+                <button class="btn btn-outline service-btn" 
+                        data-id="{{ service.id }}"
+                        onclick="showServiceModal({{ service.id }})">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="service-progress" style="margin-top: 15px; display: none;" id="progress-{{ service.id }}">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: {{ loop.index * 25 }}%;"></div>
+                    </div>
+                    <small>{{ loop.index * 25 }}% adoption rate</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Interactive Demo Section -->
+<section class="demo">
+    <div class="container">
+        <h2 class="section-title">Interactive <span class="highlight">Demo</span></h2>
+        <p class="section-subtitle">Try out our API endpoints in real-time</p>
+
+        <div class="demo-container">
+            <div class="demo-card glass-effect">
+                <h3><i class="fas fa-code"></i> API Endpoints</h3>
+                <div class="endpoint-list">
+                    {% for endpoint in endpoints %}
+                    <div class="endpoint">
+                        <span class="method {{ endpoint.method|lower }}">{{ endpoint.method }}</span>
+                        <code>{{ endpoint.path }}</code>
+                        <div class="endpoint-info">
+                            <span class="status-badge status-active">Live</span>
+                            <button class="btn btn-sm test-api" 
+                                    data-endpoint="{{ endpoint.path }}"
+                                    data-method="{{ endpoint.method }}"
+                                    data-description="{{ endpoint.description }}">
+                                Test
+                            </button>
+                            <button class="btn btn-sm btn-outline" onclick="showEndpointDocs('{{ endpoint.path }}')">
+                                <i class="fas fa-book"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="api-response">
+                    <h4>API Response: <span id="responseStatus"></span></h4>
+                    <pre id="apiResponse"><code>Click "Test" to see API responses here...</code></pre>
+                    <div class="response-meta" id="responseMeta" style="display: none;">
+                        <small>Response time: <span id="responseTime">0</span>ms | Size: <span id="responseSize">0</span>B</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-card glass-effect">
+                <h3><i class="fas fa-comment-dots"></i> AI Assistant</h3>
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-bot-info">
+                            <div class="chat-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div>
+                                <strong>Flask AI Assistant</strong>
+                                <small>Online • GPT-powered</small>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="btn btn-sm" onclick="clearChat()">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-sm" onclick="exportChat()">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot">
+                            <div class="message-content">
+                                Hello! I'm your Flask AI assistant. I can help you with:
+                                <ul>
+                                    <li>Code examples and explanations</li>
+                                    <li>API documentation</li>
+                                    <li>Best practices for Flask development</li>
+                                    <li>Debugging assistance</li>
+                                </ul>
+                                How can I help you today?
+                            </div>
+                            <div class="message-time">Just now</div>
+                        </div>
+                    </div>
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask me about Flask, APIs, or web development...">
+                        <button id="sendMessage" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button id="voiceInput" class="btn btn-secondary">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="btn btn-sm" data-question="Show me a Flask REST API example">
+                        API Example
+                    </button>
+                    <button class="btn btn-sm" data-question="How to deploy Flask with Docker?">
+                        Deployment
+                    </button>
+                    <button class="btn btn-sm" data-question="Best practices for Flask security">
+                        Security
+                    </button>
+                    <button class="btn btn-sm" onclick="startCodeReview()">
+                        <i class="fas fa-code"></i> Code Review
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Visitor Analytics -->
+<section class="analytics">
+    <div class="container">
+        <h2 class="section-title">Visitor <span class="highlight">Analytics</span></h2>
+        
+        <div class="analytics-grid">
+            <!-- Visitor Timeline -->
+            <div class="analytics-card glass-effect">
+                <h3><i class="fas fa-history"></i> Recent Visitors Timeline</h3>
+                <div class="timeline">
+                    {% for visitor in recent_visitors %}
+                    <div class="timeline-item">
+                        <div class="timeline-content">
+                            <strong>IP: {{ visitor.ip_address }}</strong>
+                            <p>{{ visitor.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                            <small class="text-muted">{{ visitor.user_agent[:50] }}...</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Heatmap -->
+            <div class="analytics-card glass-effect">
+                <h3><i class="fas fa-map"></i> Visitor Heatmap (Last 24h)</h3>
+                <div class="heatmap-container" id="visitorHeatmap">
+                    <!-- Dynamically generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Visitor Data Table -->
+        <div class="data-table-container glass-effect" style="margin-top: 30px;">
+            <h3><i class="fas fa-table"></i> Site Visitor Records</h3>
+            <div class="table-controls">
+                <input type="text" id="searchVisitors" placeholder="Search visitors..." class="form-input">
+                <select id="visitorFilter" class="form-input">
+                    <option value="all">All Visitors</option>
+                    <option value="today">Today</option>
+                    <option value="week">This Week</option>
+                    <option value="unique">Unique IPs</option>
+                </select>
+                <button onclick="exportVisitorData()" class="btn btn-sm">
+                    <i class="fas fa-download"></i> Export CSV
+                </button>
+            </div>
+            <table class="visitor-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Timestamp</th>
+                        <th>IP Address</th>
+                        <th>Location</th>
+                        <th>User Agent</th>
+                        <th>Session ID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="visitorTableBody">
+                    {% for visitor in all_sitevistor_results %}
+                    <tr>
+                        <td>{{ visitor.id }}</td>
+                        <td>{{ visitor.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            <code>{{ visitor.ip_address }}</code>
+                            <button class="btn btn-xs" onclick="copyToClipboard('{{ visitor.ip_address }}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <span class="location-badge" data-ip="{{ visitor.ip_address }}">
+                                <i class="fas fa-globe"></i> Loading...
+                            </span>
+                        </td>
+                        <td title="{{ visitor.user_agent }}">
+                            {{ visitor.user_agent[:30] }}...
+                        </td>
+                        <td>{{ visitor.session_id[:8] }}...</td>
+                        <td>
+                            <button class="btn btn-xs" onclick="blockIP('{{ visitor.ip_address }}')">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                            <button class="btn btn-xs" onclick="showVisitorDetails({{ visitor.id }})">
+                                <i class="fas fa-info-circle"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="table-footer">
+                <div class="pagination" id="visitorPagination">
+                    <!-- Pagination will be generated by JavaScript -->
+                </div>
+                <div class="table-stats">
+                    Showing <span id="visitorStart">1</span>-<span id="visitorEnd">10</span> of 
+                    <span id="totalVisitors">{{ all_sitevistor_results|length }}</span> visitors
+                </div>
+            </div>
+        </div>
+        
+        <!-- Session Stats -->
+        <div class="session-stats glass-effect" style="margin-top: 30px; padding: 20px;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">{{ visitor_count }}</div>
+                    <div class="stat-label">Your Session Visits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="uniqueVisitors">{{ unique_visitors }}</div>
+                    <div class="stat-label">Unique Visitors Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgSessionTime">0:00</div>
+                    <div class="stat-label">Avg. Session Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="bounceRate">0%</div>
+                    <div class="stat-label">Bounce Rate</div>
+                </div>
+            </div>
+            
+            <div class="session-actions" style="text-align: center; margin-top: 20px;">
+                <a href="#top" class="btn btn-primary">
+                    <i class="fas fa-arrow-up"></i> Back to Top
+                </a>
+                <button onclick="refreshStats()" class="btn btn-secondary">
+                    <i class="fas fa-sync-alt"></i> Update Stats
+                </button>
+                <button onclick="clearSession()" class="btn btn-warning">
+                    <i class="fas fa-trash"></i> Clear Session
+                </button>
+                <button onclick="exportSessionData()" class="btn btn-outline">
+                    <i class="fas fa-file-export"></i> Export Data
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- AI-Powered Recommendations -->
+<section class="recommendations">
+    <div class="container">
+        <h2 class="section-title">AI-Powered <span class="highlight">Recommendations</span></h2>
+        <div class="recommendations-container glass-effect">
+            <div class="recommendation-card">
+                <div class="recommendation-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4>Based on your activity, we recommend:</h4>
+                <ul id="aiRecommendations">
+                    <li>Explore our API documentation for advanced endpoints</li>
+                    <li>Try the interactive code editor in the demo section</li>
+                    <li>Check out our Flask security best practices guide</li>
+                </ul>
+                <button onclick="generatePersonalizedRecommendations()" class="btn btn-sm">
+                    <i class="fas fa-magic"></i> Generate More
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta">
+    <div class="container">
+        <h2 class="cta-title">Ready to Build Something Amazing?</h2>
+        <p class="cta-subtitle">Let's create your next web application together.</p>
+        <div class="cta-buttons">
+            <a href="/contact" class="btn btn-primary btn-large">
+                <i class="fas fa-paper-plane"></i> Get in Touch
+            </a>
+            <a href="/about" class="btn btn-secondary btn-large">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+            <button onclick="startFreeTrial()" class="btn btn-success btn-large">
+                <i class="fas fa-play-circle"></i> Start Free Trial
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Service Modal (Hidden) -->
+<div id="serviceModal" class="modal">
+    <div class="modal-content glass-effect">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div id="modalContent"></div>
+    </div>
+</div>
+
+<!-- Visitor Details Modal -->
+<div id="visitorModal" class="modal">
+    <div class="modal-content glass-effect" style="max-width: 600px;">
+        <span class="close-modal" onclick="closeVisitorModal()">&times;</span>
+        <div id="visitorModalContent"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tsparticles@2.9.3/tsparticles.bundle.min.js"></script>
+<script>
+    // Advanced JavaScript features
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Particles.js
+        initParticles();
+        
+        // Initialize real-time stats
+        initRealTimeStats();
+        
+        // Initialize visitor analytics
+        initVisitorAnalytics();
+        
+        // Initialize Chart.js
+        initPerformanceChart();
+        
+        // Initialize WebSocket for live updates
+        initWebSocket();
+        
+        // Initialize voice recognition
+        initVoiceRecognition();
+        
+        // Load visitor locations
+        loadVisitorLocations();
+        
+        // Initialize search and filter
+        initVisitorSearch();
+        
+        // Initialize pagination
+        initPagination();
+        
+        // Generate heatmap
+        generateHeatmap();
+        
+        // Start session timer
+        startSessionTimer();
+    });
+
+    // Particles.js Background
+    async function initParticles() {
+        await tsParticles.load("particles", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#4361ee" },
+                shape: { type: "circle" },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#3a0ca3",
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 2,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" }
+                }
+            }
+        });
+    }
+
+    // Real-time Stats with WebSocket
+    function initRealTimeStats() {
+        // Simulate real-time updates
+        setInterval(() => {
+            // Update API calls
+            const apiCount = document.getElementById('apiCount');
+            let current = parseInt(apiCount.textContent);
+            apiCount.textContent = current + Math.floor(Math.random() * 3);
+            
+            // Update live visitors
+            const liveVisitors = document.getElementById('currentVisitors');
+            liveVisitors.textContent = Math.floor(Math.random() * 50) + 10;
+            
+            // Update performance chart
+            updatePerformanceChart();
+        }, 5000);
+    }
+
+    // Performance Chart
+    let performanceChart;
+    function initPerformanceChart() {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        performanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 24}, (_, i) => i + ':00'),
+                datasets: [{
+                    label: 'Response Time (ms)',
+                    data: Array.from({length: 24}, () => Math.random() * 100 + 50),
+                    borderColor: '#4361ee',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Requests/min',
+                    data: Array.from({length: 24}, () => Math.random() * 100 + 20),
+                    borderColor: '#f72585',
+                    backgroundColor: 'rgba(247, 37, 133, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    }
+
+    function updatePerformanceChart() {
+        if (performanceChart) {
+            performanceChart.data.datasets.forEach(dataset => {
+                dataset.data.push(Math.random() * 100);
+                dataset.data.shift();
+            });
+            performanceChart.update('none');
+        }
+    }
+
+    // WebSocket for Live Updates
+    function initWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const ws = new WebSocket(`${protocol}//${window.location.host}/ws`);
+        
+        ws.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            switch(data.type) {
+                case 'visitor_update':
+                    updateVisitorTable(data.visitor);
+                    break;
+                case 'api_call':
+                    updateApiStats(data.count);
+                    break;
+                case 'system_status':
+                    updateSystemStatus(data.status);
+                    break;
+            }
+        };
+        
+        ws.onclose = function() {
+            setTimeout(initWebSocket, 5000);
+        };
+    }
+
+    // Advanced API Testing
+    document.querySelectorAll('.test-api').forEach(button => {
+        button.addEventListener('click', async function() {
+            const endpoint = this.dataset.endpoint;
+            const method = this.dataset.method || 'GET';
+            const description = this.dataset.description;
+            
+            const responseEl = document.getElementById('apiResponse');
+            const statusEl = document.getElementById('responseStatus');
+            const timeEl = document.getElementById('responseTime');
+            const sizeEl = document.getElementById('responseSize');
+            const metaEl = document.getElementById('responseMeta');
+            
+            responseEl.innerHTML = '<code class="shimmer">Testing endpoint...</code>';
+            statusEl.textContent = '';
+            metaEl.style.display = 'none';
+            
+            const startTime = performance.now();
+            
+            try {
+                let response;
+                if (method === 'POST') {
+                    response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': 'demo-key-' + Date.now()
+                        },
+                        body: JSON.stringify({
+                            name: "Test User",
+                            email: `test${Date.now()}@example.com`,
+                            message: description || "Test API call from interactive demo",
+                            timestamp: new Date().toISOString()
+                        })
+                    });
+                } else {
+                    response = await fetch(endpoint, {
+                        headers: {
+                            'X-API-Key': 'demo-key-' + Date.now()
+                        }
+                    });
+                }
+                
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+                
+                const data = await response.json();
+                const responseSize = new Blob([JSON.stringify(data)]).size;
+                
+                // Format JSON with syntax highlighting
+                const formattedJson = JSON.stringify(data, null, 2)
+                    .replace(/(".*?"):/g, '<span class="json-key">$1</span>:')
+                    .replace(/: ("|true|false|null|\d+)/g, ': <span class="json-value">$1</span>');
+                
+                responseEl.innerHTML = `<code>${formattedJson}</code>`;
+                statusEl.textContent = `${response.status} ${response.statusText}`;
+                statusEl.className = response.ok ? 'text-success' : 'text-danger';
+                timeEl.textContent = responseTime;
+                sizeEl.textContent = responseSize;
+                metaEl.style.display = 'block';
+                
+                // Update API call counter with animation
+                const apiCountEl = document.getElementById('apiCount');
+                animateValue(apiCountEl, parseInt(apiCountEl.textContent), parseInt(apiCountEl.textContent) + 1, 500);
+                
+            } catch (error) {
+                responseEl.innerHTML = `<code class="text-danger">Error: ${error.message}</code>`;
+                statusEl.textContent = 'ERROR';
+                statusEl.className = 'text-danger';
+            }
+        });
+    });
+
+    // Animate value changes
+    function animateValue(element, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            element.textContent = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // AI Chat with LocalStorage Memory
+    const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+    
+    function addMessage(content, isBot = false, persist = true) {
+        const chatMessages = document.getElementById('chatMessages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isBot ? 'bot' : 'user'}`;
+        
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        messageDiv.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-${isBot ? 'robot' : 'user'}"></i>
+            </div>
+            <div class="message-content-container">
+                <div class="message-content">${content}</div>
+                <div class="message-time">${timeString}</div>
+            </div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        if (persist) {
+            chatHistory.push({
+                content,
+                isBot,
+                timestamp: now.toISOString()
+            });
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+        }
+    }
+
+    async function handleUserMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (!message) return;
+        
+        addMessage(message, false);
+        input.value = '';
+        
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'message bot typing';
+        typingIndicator.innerHTML = `
+            <div class="message-avatar">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="message-content-container">
+                <div class="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        `;
+        document.getElementById('chatMessages').appendChild(typingIndicator);
+        
+        // Simulate AI response (in production, this would call an API)
+        setTimeout(() => {
+            typingIndicator.remove();
+            
+            const responses = {
+                'api': "Here's a Flask REST API example:\n```python\n@app.route('/api/users', methods=['GET'])\ndef get_users():\n    users = User.query.all()\n    return jsonify([user.to_dict() for user in users])\n```",
+                'deployment': "To deploy Flask with Docker:\n1. Create Dockerfile\n2. Use Gunicorn for production\n3. Set up environment variables\n4. Use Docker Compose for services",
+                'security': "Flask security best practices:\n• Use Flask-Security-Too\n• Implement CSRF protection\n• Sanitize user input\n• Use HTTPS\n• Rate limiting with Flask-Limiter",
+                'default': "I understand you're asking about Flask development. Could you be more specific about what you need help with?"
+            };
+            
+            let response = responses.default;
+            if (message.toLowerCase().includes('api')) response = responses.api;
+            if (message.toLowerCase().includes('deploy')) response = responses.deployment;
+            if (message.toLowerCase().includes('security')) response = responses.security;
+            
+            addMessage(response, true);
+        }, 1500 + Math.random() * 1000);
+    }
+
+    // Voice Recognition
+    let recognition;
+    function initVoiceRecognition() {
+        if ('webkitSpeechRecognition' in window) {
+            recognition = new webkitSpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            document.getElementById('voiceInput').addEventListener('click', () => {
+                recognition.start();
+                document.getElementById('voiceInput').innerHTML = '<i class="fas fa-microphone-slash"></i>';
+            });
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('chatInput').value = transcript;
+                document.getElementById('voiceInput').innerHTML = '<i class="fas fa-microphone"></i>';
+            };
+            
+            recognition.onend = () => {
+                document.getElementById('voiceInput').innerHTML = '<i class="fas fa-microphone"></i>';
+            };
+        } else {
+            document.getElementById('voiceInput').style.display = 'none';
+        }
+    }
+
+    // Visitor Analytics Functions
+    function initVisitorAnalytics() {
+        // Calculate session time
+        const sessionStart = localStorage.getItem('sessionStart') || Date.now();
+        localStorage.setItem('sessionStart', sessionStart);
+        
+        setInterval(() => {
+            const elapsed = Date.now() - sessionStart;
+            const minutes = Math.floor(elapsed / 60000);
+            const seconds = Math.floor((elapsed % 60000) / 1000);
+            document.getElementById('avgSessionTime').textContent = 
+                `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    async function loadVisitorLocations() {
+        document.querySelectorAll('.location-badge').forEach(async badge => {
+            const ip = badge.dataset.ip;
+            try {
+                const response = await fetch(`https://ipapi.co/${ip}/json/`);
+                const data = await response.json();
+                badge.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${data.city || 'Unknown'}, ${data.country_code || ''}`;
+            } catch {
+                badge.innerHTML = '<i class="fas fa-question-circle"></i> Unknown';
+            }
+        });
+    }
+
+    function generateHeatmap() {
+        const container = document.getElementById('visitorHeatmap');
+        const hours = Array.from({length: 24}, (_, i) => i);
+        
+        hours.forEach(hour => {
+            const cell = document.createElement('div');
+            cell.className = 'heatmap-cell';
+            const visitors = Math.floor(Math.random() * 100);
+            const intensity = Math.min(1, visitors / 100);
+            cell.style.background = `rgba(67, 97, 238, ${intensity})`;
+            cell.title = `${hour}:00 - ${visitors} visitors`;
+            cell.textContent = hour;
+            container.appendChild(cell);
+        });
+    }
+
+    // Modal Functions
+    function showServiceModal(serviceId) {
+        const modal = document.getElementById('serviceModal');
+        const content = document.getElementById('modalContent');
+        
+        // Fetch service details (in production, this would be an API call)
+        const serviceDetails = {
+            1: {
+                title: "Web Development",
+                description: "Full-stack web development with modern frameworks",
+                details: "We build scalable web applications using React, Vue, or Angular on the frontend with Flask on the backend. Our solutions include real-time features, PWA capabilities, and SEO optimization.",
+                technologies: ["React", "Vue.js", "Flask", "PostgreSQL", "Redis"],
+                pricing: "Starting at $5,000"
+            },
+            // Add other services...
+        };
+        
+        const service = serviceDetails[serviceId] || {
+            title: "Service Details",
+            description: "Detailed information about our service",
+            details: "More information coming soon...",
+            technologies: [],
+            pricing: "Contact for pricing"
+        };
+        
+        content.innerHTML = `
+            <h2>${service.title}</h2>
+            <p class="lead">${service.description}</p>
+            <p>${service.details}</p>
+            <h4>Technologies:</h4>
+            <div class="tech-tags">
+                ${service.technologies.map(tech => `<span class="tech-tag">${tech}</span>`).join('')}
+            </div>
+            <h4>Pricing:</h4>
+            <p>${service.pricing}</p>
+            <div class="modal-actions">
+                <button onclick="contactAboutService(${serviceId})" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Contact Us
+                </button>
+                <button onclick="closeModal()" class="btn btn-secondary">Close</button>
+            </div>
+        `;
+        
+        modal.style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('serviceModal').style.display = 'none';
+        document.getElementById('visitorModal').style.display = 'none';
+    }
+
+    // Visitor table search and filter
+    function initVisitorSearch() {
+        const searchInput = document.getElementById('searchVisitors');
+        const filterSelect = document.getElementById('visitorFilter');
+        
+        searchInput.addEventListener('input', filterVisitors);
+        filterSelect.addEventListener('change', filterVisitors);
+    }
+
+    function filterVisitors() {
+        const searchTerm = document.getElementById('searchVisitors').value.toLowerCase();
+        const filterValue = document.getElementById('visitorFilter').value;
+        
+        document.querySelectorAll('#visitorTableBody tr').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const matchesSearch = text.includes(searchTerm);
+            const matchesFilter = true; // Add filter logic based on filterValue
+            
+            row.style.display = matchesSearch && matchesFilter ? '' : 'none';
+        });
+    }
+
+    // Pagination
+    function initPagination() {
+        const rowsPerPage = 10;
+        const totalRows = {{ all_sitevistor_results|length }};
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+        
+        const pagination = document.getElementById('visitorPagination');
+        let html = '';
+        
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="page-btn ${i === 1 ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        
+        pagination.innerHTML = html;
+        updatePaginationDisplay(1, rowsPerPage);
+    }
+
+    function goToPage(page) {
+        // Implement pagination logic
+        document.querySelectorAll('.page-btn').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const rowsPerPage = 10;
+        updatePaginationDisplay(page, rowsPerPage);
+    }
+
+    function updatePaginationDisplay(page, rowsPerPage) {
+        const start = (page - 1) * rowsPerPage + 1;
+        const end = Math.min(page * rowsPerPage, {{ all_sitevistor_results|length }});
+        
+        document.getElementById('visitorStart').textContent = start;
+        document.getElementById('visitorEnd').textContent = end;
+    }
+
+    // Utility Functions
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showNotification('Copied to clipboard!', 'success');
+        });
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
+
+    function clearChat() {
+        if (confirm('Clear chat history?')) {
+            document.getElementById('chatMessages').innerHTML = '';
+            localStorage.removeItem('chatHistory');
+            addMessage("Hello! I'm your Flask AI assistant. How can I help you today?", true, false);
+        }
+    }
+
+    function exportChat() {
+        const chatData = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chat-history-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Theme Toggle
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+        document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+    });
+
+    // Start Code Review
+    function startCodeReview() {
+        addMessage("Please paste your Flask code and I'll review it for best practices, security issues, and performance improvements.", true);
+    }
+
+    // Generate AI Recommendations
+    function generatePersonalizedRecommendations() {
+        const recommendations = [
+            "Check out our advanced API rate limiting implementation",
+            "Explore our Flask-SQLAlchemy optimization guide",
+            "Try our WebSocket implementation for real-time features",
+            "Learn about Flask caching strategies for better performance",
+            "Read our guide on Flask testing best practices"
+        ];
+        
+        const list = document.getElementById('aiRecommendations');
+        list.innerHTML = '';
+        recommendations.slice(0, 3).forEach(rec => {
+            const li = document.createElement('li');
+            li.textContent = rec;
+            list.appendChild(li);
+        });
+        
+        showNotification('Generated new recommendations!', 'success');
+    }
+
+    // Session Management
+    function clearSession() {
+        if (confirm('Clear your session data?')) {
+            localStorage.removeItem('sessionStart');
+            localStorage.removeItem('chatHistory');
+            location.reload();
+        }
+    }
+
+    function exportSessionData() {
+        const sessionData = {
+            sessionStart: localStorage.getItem('sessionStart'),
+            chatHistory: JSON.parse(localStorage.getItem('chatHistory') || '[]'),
+            visitorCount: {{ visitor_count }},
+            timestamp: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(sessionData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `session-data-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Event Listeners
+    document.getElementById('sendMessage').addEventListener('click', handleUserMessage);
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') handleUserMessage();
+    });
+
+    // Add CSS for new components
+    const style = document.createElement('style');
+    style.textContent = `
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            background: white;
+            color: var(--dark-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .notification-success {
+            border-left: 4px solid #4cc9f0;
+        }
+        
+        .tech-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            background: var(--light-gray);
+            border-radius: 20px;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .json-key { color: #f72585; }
+        .json-value { color: #4361ee; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9998;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}
